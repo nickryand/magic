@@ -141,8 +141,12 @@ func (m *Magic) Load(file string) error {
 		return ConnectionError
 	}
 
-	cf := C.CString(file)
-	defer C.free(unsafe.Pointer(cf))
+	var cf *C.char
+
+	if file != "" {
+		cf = C.CString(file)
+		defer C.free(unsafe.Pointer(cf))
+	}
 
 	C.magic_load(m.ptr, cf)
 	return m.check()
