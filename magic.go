@@ -56,7 +56,7 @@ func (m *Magic) Close() (err error) {
 		return ConnectionError
 	}
 
-	//C.magic_close(m.ptr)
+	C.magic_close(m.ptr)
 	m.ptr = nil
 	return
 }
