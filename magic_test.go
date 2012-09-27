@@ -45,3 +45,30 @@ func Test(t *testing.T) {
 		t.Fatalf("Unexpected mime type. Want %q, have %q", want, have)
 	}
 }
+
+func TestSystemMagic(t *testing.T) {
+	conn, err := Open(FlagMime)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer conn.Close()
+
+	err = conn.Load("")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	const want = "text/plain; charset=us-ascii"
+
+	for i := 0; i < 10; i++ {
+		have, err := conn.File("magic_test.go")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if have != want {
+			t.Fatalf("Unexpected mime type. Want %q, have %q", want, have)
+		}
+	}
+
+}

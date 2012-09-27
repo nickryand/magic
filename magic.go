@@ -56,7 +56,7 @@ func (m *Magic) Close() (err error) {
 		return ConnectionError
 	}
 
-	//C.magic_close(m.ptr)
+	C.magic_close(m.ptr)
 	m.ptr = nil
 	return
 }
@@ -76,9 +76,7 @@ func (m *Magic) File(file string) (string, error) {
 		return "", m.check()
 	}
 
-	r := C.GoString(cr)
-	C.free(unsafe.Pointer(cr))
-	return r, nil
+	return C.GoString(cr), nil
 }
 
 // Descriptor returns a textual description of the contents of the
@@ -93,9 +91,7 @@ func (m *Magic) Descriptor(fd int) (string, error) {
 		return "", m.check()
 	}
 
-	r := C.GoString(cr)
-	C.free(unsafe.Pointer(cr))
-	return r, nil
+	return C.GoString(cr), nil
 }
 
 // Buffer returns a textual description of the contents of the buffer argument.
@@ -112,9 +108,7 @@ func (m *Magic) Buffer(data []byte) (string, error) {
 		return "", m.check()
 	}
 
-	r := C.GoString(cr)
-	C.free(unsafe.Pointer(cr))
-	return r, nil
+	return C.GoString(cr), nil
 }
 
 // SetFlags sets the given flags.
@@ -141,8 +135,12 @@ func (m *Magic) Load(file string) error {
 		return ConnectionError
 	}
 
-	cf := C.CString(file)
-	defer C.free(unsafe.Pointer(cf))
+	var cf *C.char
+
+	if file != "" {
+		cf = C.CString(file)
+		defer C.free(unsafe.Pointer(cf))
+	}
 
 	C.magic_load(m.ptr, cf)
 	return m.check()
