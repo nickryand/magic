@@ -61,14 +61,12 @@ func TestSystemMagic(t *testing.T) {
 
 	const want = "text/plain; charset=us-ascii"
 
-	for i := 0; i < 10; i++ {
-		have, err := conn.File("magic_test.go")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if have != want {
-			t.Fatalf("Unexpected mime type. Want %q, have %q", want, have)
-		}
+	have, err := conn.File("magic_test.go")
+	if err != nil {
+		t.Fatal(err)
 	}
 
+	if have != want {
+		t.Fatalf("Unexpected mime type. Want %q, have %q", want, have)
+	}
 }

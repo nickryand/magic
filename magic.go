@@ -32,15 +32,13 @@ func Path(file string, flags int) string {
 	return C.GoString(cr)
 }
 
-// Magic exposes a set of methods which allow
-// us to interact with the magic database as defined
-// by libmagic.
+// Magic exposes a set of methods which allow us to interact with the
+// magic database as defined by libmagic.
 type Magic struct {
 	ptr C.magic_t // Holds the database descriptor.
 }
 
-// Open attempts to create a new connection to
-// the magic database.
+// Open attempts to create a new connection to the magic database.
 func Open(flags int) (*Magic, error) {
 	ptr := C.magic_open(C.int(flags))
 	if ptr == nil {
@@ -127,9 +125,11 @@ func (m *Magic) SetFlags(flags int) error {
 	return m.check()
 }
 
-// Load must be used to load the the colon separated list of database files
-// passed in as filename, or "" for the default database file before any
-// magic queries can performed.
+// Load must be used to load database files before any magic queries can
+// be performed.
+// 
+// We expect either a colon separated list of database file paths, or an
+// empty string ("") to use the default, system-installed database.
 func (m *Magic) Load(file string) error {
 	if m.ptr == nil {
 		return ConnectionError
@@ -146,10 +146,12 @@ func (m *Magic) Load(file string) error {
 	return m.check()
 }
 
-// Compile can be used to compile the the colon separated list of database
-// files passed in as filename, or "" for the default database.
-// The compiled files created are named from the basename(1) of each
-// file argument with ``.mgc'' appended to it.
+// Compile can be used to compile the specified database files.
+//
+// The created files are named from the basename(1) of each
+// file argument with `.mgc` appended to it.
+// 
+// We expect a colon separated list of database file paths.
 func (m *Magic) Compile(file string) error {
 	if m.ptr == nil {
 		return ConnectionError
@@ -162,9 +164,10 @@ func (m *Magic) Compile(file string) error {
 	return m.check()
 }
 
-// Check can be used to check the validity of entries
-// in the colon separated database files passed in as filename,
-// or "" the default database. 
+// Check can be used to check the validity of entries in the given
+// database files.
+// 
+// We expect a colon separated list of database file paths.
 func (m *Magic) Check(file string) error {
 	if m.ptr == nil {
 		return ConnectionError
@@ -179,8 +182,10 @@ func (m *Magic) Check(file string) error {
 
 // List dumps all magic entries in a human readable format, dumping first the
 // entries that are matched against binary files and then the ones that match
-// text files. It takes and optional filename argument which is a colon
-// separated list of database files, or "" for the default database.
+// text files.
+// 
+// We expect either a colon separated list of database file paths, or an
+// empty string ("") to use the default, system-installed database.
 func (m *Magic) List(file string) error {
 	if m.ptr == nil {
 		return ConnectionError
