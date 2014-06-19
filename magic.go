@@ -29,7 +29,9 @@ func Path(file string, flags int) string {
 		return ""
 	}
 
-	return C.GoString(cr)
+	r := C.GoString(cr)
+	C.free(unsafe.Pointer(cr))
+	return r, nil
 }
 
 // Magic exposes a set of methods which allow us to interact with the
@@ -74,7 +76,9 @@ func (m *Magic) File(file string) (string, error) {
 		return "", m.check()
 	}
 
-	return C.GoString(cr), nil
+	r := C.GoString(cr)
+	C.free(unsafe.Pointer(cr))
+	return r, nil
 }
 
 // Descriptor returns a textual description of the contents of the
@@ -89,7 +93,9 @@ func (m *Magic) Descriptor(fd int) (string, error) {
 		return "", m.check()
 	}
 
-	return C.GoString(cr), nil
+	r := C.GoString(cr)
+	C.free(unsafe.Pointer(cr))
+	return r, nil
 }
 
 // Buffer returns a textual description of the contents of the buffer argument.
@@ -106,7 +112,9 @@ func (m *Magic) Buffer(data []byte) (string, error) {
 		return "", m.check()
 	}
 
-	return C.GoString(cr), nil
+	r := C.GoString(cr)
+	C.free(unsafe.Pointer(cr))
+	return r, nil
 }
 
 // SetFlags sets the given flags.
@@ -209,5 +217,7 @@ func (m *Magic) check() error {
 		return nil
 	}
 
-	return errors.New(C.GoString(cr))
+	r := C.GoString(cr)
+	C.free(unsafe.Pointer(cr))
+	return errors.New(r)
 }
