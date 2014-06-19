@@ -97,6 +97,9 @@ func (m *Magic) Buffer(data []byte) (string, error) {
 	if m.ptr == nil {
 		return "", ConnectionError
 	}
+	if len(data) == 0 {
+		return "", nil
+	}
 
 	ptr := unsafe.Pointer(&data[0])
 	sz := C.size_t(len(data))
