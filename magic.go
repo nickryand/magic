@@ -98,7 +98,7 @@ func (m *Magic) Buffer(data []byte) (string, error) {
 		return "", ConnectionError
 	}
 
-	ptr := unsafe.Pointer(&data)
+	ptr := unsafe.Pointer(&data[0])
 	sz := C.size_t(len(data))
 	cr := C.magic_buffer(m.ptr, ptr, sz)
 
