@@ -31,7 +31,7 @@ func Path(file string, flags int) string {
 
 	r := C.GoString(cr)
 	C.free(unsafe.Pointer(cr))
-	return r, nil
+	return r
 }
 
 // Magic exposes a set of methods which allow us to interact with the
@@ -76,8 +76,12 @@ func (m *Magic) File(file string) (string, error) {
 		return "", m.check()
 	}
 
+	// The cr pointer is tracked by the Magic Cookie
+	// and does not need to be freed here. Doing so
+	// causes an error when Close() is called because
+	// a free attempt is made against an item that has
+	// already been freed.
 	r := C.GoString(cr)
-	C.free(unsafe.Pointer(cr))
 	return r, nil
 }
 
@@ -153,8 +157,11 @@ func (m *Magic) Load(file string) error {
 		defer C.free(unsafe.Pointer(cf))
 	}
 
-	C.magic_load(m.ptr, cf)
-	return m.check()
+	ret := int(C.magic_load(m.ptr, cf))
+	if ret < 0 {
+		return m.check()
+	}
+	return nil
 }
 
 // Compile can be used to compile the specified database files.
